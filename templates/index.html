@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ransomware Victims</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            overflow: hidden;
+        }
+        /* Logo Styles */
+        .logo-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .logo {
+            max-width: 200px;
+            height: auto;
+        }
+        /* Title Styles */
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        /* Victim Card Styles */
+        .victim {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .victim h2 {
+            margin-top: 0;
+        }
+        .victim p {
+            margin: 5px 0;
+        }
+        .victim a {
+            color: #333;
+            text-decoration: none;
+        }
+        .victim a:hover {
+            text-decoration: underline;
+        }
+        /* Flag Styles */
+        .flag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: auto;
+        }
+        /* Icon Styles */
+        .icons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-start;
+            gap: 15px;
+        }
+        .icons a {
+            color: #555;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        .icons a:hover {
+            color: #000;
+        }
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* Footer Styles */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+        footer a {
+            color: #ff9800;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /* Description Box Styles */
+        .description-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #333;
+        }
+        /* Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            position: relative;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        .popup-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px; /* Added margin around the image */
+        }
+        .popup-content .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 35px; /* Increase the font size */
+            color: #555;
+            cursor: pointer;
+            padding: 10px; /* Optional: Add padding to make it easier to click */
+            line-height: 1; /* Ensure the X is not vertically stretched */
+        }
+        .popup-content table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .popup-content th, .popup-content td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .popup-content th {
+            background-color: #f2f2f2;
+        }
+        /* Back to Top Arrow Styles */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none; /* Initially hidden */
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.back-to-top i {
+    font-size: 20px;
+}
+
+.back-to-top:hover {
+    background-color: #555;
+}
+
+/* Floating Help Icon Styles */
+.help-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.help-icon i {
+    font-size: 20px;
+}
+
+.help-icon:hover {
+    background-color: #555;
+}
+
+
+
+/* Legend Popup Styles */
+.popup-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.popup-content ul li {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.popup-content ul li i {
+    margin-right: 10px;
+}
+
+.note {
+    font-size: 0.85em; /* Smaller font size */
+    font-style: italic; /* Italic text */
+    color: #555; /* Optional: a subtle color */
+    margin-top: 15px; /* Space above the note */
+}
+/* Popup Actions Styles */
+.popup-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.popup-actions button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+#confirmYaraYes {
+    background-color: #28a745; /* Green for YES */
+    color: #fff;
+}
+
+#confirmYaraNo {
+    background-color: #dc3545; /* Red for NO */
+    color: #fff;
+}
+
+.popup-actions button:hover {
+    opacity: 0.9;
+}
+/* Help Icon Styles for Popup */
+.help-icon-popup {
+    position: absolute;
+    top: 10px;
+    left: 10px; /* Position it on the left */
+    width: 40px;
+    height: 40px;
+    background-color: #007bff; /* Blue background */
+    color: #fff; /* White question mark */
+    border-radius: 50%; /* Make it circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px; /* Adjust the font size as needed */
+    cursor: pointer;
+}
+
+.help-icon-popup::before {
+    content: "\f059"; /* Font Awesome question mark icon */
+    font-family: "Font Awesome 5 Free"; /* Font Awesome font */
+    font-weight: 900; /* Ensure the icon is solid */
+}
+
+.new-icon {
+    color: #0aed0a; /* Red color for the icon */
+    font-size: 1.2em; /* Adjust size as needed */
+    margin-left: 10px; /* Space between name and icon */
+}
+
+    </style>
+</head>
+<body>
+    <!-- Floating Help Icon -->
+<a href="#" class="help-icon" title="Legend"><i class="fas fa-question"></i></a>
+
+    <script>
+        // Show or hide the "Back to Top" arrow
+        window.addEventListener('scroll', function() {
+            var backToTop = document.querySelector('.back-to-top');
+            if (window.pageYOffset > 100) { // Show the button after scrolling down 100px
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    
+        // Scroll smoothly to the top when the arrow is clicked
+        document.querySelector('.back-to-top').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo-container">
+            <a href="https://www.ransomware.live" target="_blank"><img src="{{ url_for('static', filename='ransomwarelive.png') }}" alt="Ransomware Live Logo" class="logo"></a>
+        </div>
+        <!-- Title -->
+        
+        <!-- Victim Entries -->
+        {% for victim in victims %}
+            <div class="victim" data-discovered="{{ victim.discovered }}">
+                <img src="https://images.ransomware.live/flags/{{ victim.country }}.svg" alt="{{ victim.country }} flag" title="{{ victim.country_name }}" class="flag">
+                <h2>{{ victim.post_title }}<span class="new-icon" style="display: none;">
+                    <i class="fa-solid fa-caret-up"></i>
+                </span></h2>
+                <p><strong>Group Name: </strong>{{ victim.group_name }} <sup><href="#" class="show-yara-popup" data-yara-url="https://www.ransomware.live/#/group/{{ victim.group_name }}" title="More about {{ victim.group_name }}">
+                    <i class="fas fa-info-circle info-icon"></i></sup></p> 
+                    
+                <p><strong>Discovered: </strong> {{ victim.discovered.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Activity: </strong> {{ victim.activity }}</p>
+                {% if victim.description %}
+                    <BR>
+                    <p class="description-box">{{ victim.description }}</p>
+                {% endif %}
+                <BR>
+                <div class="icons">
+                    {% if victim.website %}
+                        <a href="{{ victim.website }}" target="_blank" title="Visit Website">
+                            <i class="fas fa-globe"></i>
+                    </a>
+                    {% endif %}
+                    {% if victim.has_infostealer_info %}
+                        <a href="#" data-employees="{{ victim.infostealer_data.employees }}" data-users="{{ victim.infostealer_data.users }}" title="Infostealer Information Found">
+                            <i class="fas fa-user-secret"></i>
+                        </a>
+                    {% endif %}
+                    {% if victim.has_screenshot %}
+                        <a href="#" class="show-popup" data-img-url="https://images.ransomware.live/screenshots/posts/{{ victim.post_url_md5 }}.png" title="Screenshot Available">
+                            <i class="fas fa-camera"></i>
+                        </a>
+                    {% endif %}
+                    {% if victim.has_yara %}
+                        <a href="#" class="show-yara-popup" data-yara-url="https://www.ransomware.live/#/yara/{{ victim.group_name }}" title="YARA Rules Available">
+                            <i class="fas fa-scroll"></i>
+                        </a>
+                    {% endif %}
+                    {% if victim.has_ttps %}
+                        <a href="#" class="show-ttps-popup" data-ttps='{{ victim.ttps_data | tojson | safe }}' title="TTPs present for this ransomware group">
+                            <i class="fas fa-tools"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+
+
+    <script>
+        // Function to get a cookie value by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null; // Return null if cookie not found
+        }
+
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        // Function to check and update the "New" icon
+        function checkForNewEntries() {
+            const lastVisit = getCookie('timestamp');
+            const currentTimestamp = new Date().toISOString().split('.')[0].replace('T', ' ');
+
+            if (!lastVisit) {
+                // If no timestamp cookie is found, set the cookie with the current timestamp
+                setCookie('timestamp', currentTimestamp, 7);
+                return; // Do not show the "New" icon as this is the user's first visit
+            }
+
+            // Convert the last visit timestamp to a Date object
+            const lastVisitDate = new Date(lastVisit);
+
+            // Check each victim's discovered date
+            document.querySelectorAll('.victim').forEach(function(victim) {
+                const discoveredDate = new Date(victim.getAttribute('data-discovered'));
+
+                // Show the "New" icon if discovered date is more recent than last visit
+                if (discoveredDate > lastVisitDate) {
+                    victim.querySelector('.new-icon').style.display = 'inline'; // Show the "New" icon
+                } else {
+                    victim.querySelector('.new-icon').style.display = 'none'; // Hide the "New" icon
+                }
+            });
+        }
+
+        // Update the cookie with the current timestamp after the page has fully loaded
+        function updateCookieOnLoad() {
+            const currentTimestamp = new Date().toISOString().split('.')[0].replace('T', ' ');
+            setCookie('timestamp', currentTimestamp, 7);
+        }
+
+        // Run the check and update the cookie when the page loads
+        window.addEventListener('load', function() {
+            checkForNewEntries();
+            updateCookieOnLoad();
+        });
+    </script>
+
+
+   
+    <!-- Screenshot Popup Structure -->
+    <div class="popup" id="imagePopup">
+        <div class="popup-content">
+            <span class="close" id="closeImagePopup">&times;</span>
+            <img id="popupImage" src="" alt="Screenshot">
+        </div>
+    </div>
+
+    <!-- TTPs Popup Structure -->
+    <div class="popup" id="ttpsPopup">
+        <div class="popup-content">
+            <span class="close" id="closeTtpsPopup">&times;</span>
+            <h2>TTPs information for this group:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Discovery</th>
+                        <th>RMM Tools</th>
+                        <th>Defense Evasion</th>
+                        <th>Credential Theft</th>
+                        <th>OffSec</th>
+                        <th>Networking</th>
+                        <th>LOLBAS</th>
+                        <th>Exfiltration</th>
+                    </tr>
+                </thead>
+                <tbody id="ttpsTableBody">
+                    <!-- Dynamic rows will be inserted here -->
+                </tbody>
+            </table>
+            <p></p>
+            <p class="note">This information is provided by <a href="https://github.com/BushidoUK/Ransomware-Tool-Matrix" target="_blank"> Ransomware-Tool-Matrix</a></p>
+        </div>
+    </div>
+
+<!-- YARA Confirmation Popup Structure -->
+<div class="popup" id="yaraPopup">
+    <div class="popup-content">
+        <span class="help-icon-popup" title="This action will take you away from the site."></span>
+        <p><BR></p>
+        <p>You're leaving the mobile site. Do you want to continue?</p>
+        <div class="popup-actions">
+            <button id="confirmYaraYes">YES</button>
+            <button id="confirmYaraNo">NO</button>
+        </div>
+    </div>
+</div>
+
+    <!-- Infostealer Popup Structure -->
+    <div class="popup" id="infostealerPopup">
+        <div class="popup-content">
+            <span class="close" id="closeInfostealerPopup">&times;</span>
+            <h2>Infostealer information available for this victim:</h2>
+            <table>
+                <thead align="center">
+                    <tr>
+                        <th>User(s)</th>
+                        <th>Customer(s)</th>
+                    </tr>
+                    <tbody  align="center">
+                        <tr>
+                            <th><span id="infostealerUsers"></span></th>
+                            <th><span id="infostealerCustomers"></span></th>
+                    </tbody>
+                </thead>
+            </table>
+            <p></p>
+            <p class="note">This information is provided by <a href="https://www.hudsonrock.com" target="_blank">HudsonRock</a></p>
+        </div>
+    </div>
+
+    <!-- Legend Popup Structure -->
+<div class="popup" id="legendPopup">
+    <div class="popup-content">
+        <span class="close" id="closeLegendPopup">&times;</span>
+        <h2>Icon Legend</h2>
+        <ul>
+            <li><i class="fas fa-tools"></i> TTPs: Tactics, Techniques, and Procedures</li>
+            <li><i class="fas fa-globe"></i> Victim's website</li>
+            <li><i class="fas fa-camera"></i> Screenshot of the ransomware gang Dedicated Leak Sites</li>
+            <li><i class="fas fa-user-secret"></i> Infostealer Information available in HudsonRock database</li>
+            <li><i class="fas fa-scroll"></i> Yara Rules is available on Ransomware.live</li>
+        </ul>
+        <hr>
+        <BR>
+        <i class="fa-solid fa-cookie"></i> The cookie is stored locally on your device and is used solely to identify and display new victims since your last visit to this site.
+        <BR>
+    </div>
+</div>
+
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2024 Ransomware.live. All rights reserved. | <a href="https://ransomwarelive.freshdesk.com/support/tickets/new" target="_blank">Contact us</a></p>
+    </footer>
+    <!-- Floating Back to Top Arrow -->
+    <a href="#" class="back-to-top" title="Back to top"><i class="fas fa-arrow-up"></i></a>
+
+    <script>
+        // Function to show the image popup
+        document.querySelectorAll('.show-popup').forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault();
+                var imageUrl = this.getAttribute('data-img-url');
+                var popupImage = document.getElementById('popupImage');
+                popupImage.src = imageUrl;
+                document.getElementById('imagePopup').style.display = 'flex';
+            });
+        });
+    
+        // Function to close the image popup
+        document.getElementById('closeImagePopup').addEventListener('click', function() {
+            document.getElementById('imagePopup').style.display = 'none';
+        });
+    
+        // Close the image popup when clicking outside the popup content
+        window.addEventListener('click', function(event) {
+            var popup = document.getElementById('imagePopup');
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+    
+        // Function to show the TTPs popup
+        document.querySelectorAll('.show-ttps-popup').forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault();
+                var ttpsData = this.getAttribute('data-ttps');
+                try {
+                    ttpsData = JSON.parse(ttpsData); // Ensure JSON is parsed
+                } catch (e) {
+                    console.error("Failed to parse TTPs data:", e);
+                    return;
+                }
+    
+                var ttpsTableBody = document.getElementById('ttpsTableBody');
+                ttpsTableBody.innerHTML = ''; // Clear existing table rows
+    
+                var maxRows = 0;
+                var categories = ["DiscoveryEnum", "RMM-Tools", "DefenseEvasion", "CredentialTheft", "Offsec", "Networking", "LOLBAS", "Exfiltration"];
+                
+                categories.forEach(function(category) {
+                    if (ttpsData[category] && ttpsData[category].length > 0) {
+                        maxRows = Math.max(maxRows, ttpsData[category].length);
+                    }
+                });
+    
+                for (var i = 0; i < maxRows; i++) {
+                    var row = document.createElement('tr');
+                    categories.forEach(function(category) {
+                        var cellValue = ttpsData[category] && ttpsData[category][i] ? ttpsData[category][i] : '';
+                        row.innerHTML += `<td>${cellValue}</td>`;
+                    });
+                    ttpsTableBody.appendChild(row);
+                }
+    
+                document.getElementById('ttpsPopup').style.display = 'flex'; // Show the popup
+            });
+        });
+    
+        // Function to close the TTPs popup
+        document.getElementById('closeTtpsPopup').addEventListener('click', function() {
+            document.getElementById('ttpsPopup').style.display = 'none';
+        });
+    
+        // Close the TTPs popup when clicking outside the popup content
+        window.addEventListener('click', function(event) {
+            var popup = document.getElementById('ttpsPopup');
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+    
+        // Function to show the infostealer popup
+        document.querySelectorAll('[data-employees][data-users]').forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault();
+                var users = this.getAttribute('data-users');
+                var employees = this.getAttribute('data-employees');
+    
+                // Update popup content
+                document.getElementById('infostealerUsers').textContent = users || 'N/A';
+                document.getElementById('infostealerCustomers').textContent = employees || 'N/A';
+    
+                // Show the infostealer popup
+                document.getElementById('infostealerPopup').style.display = 'flex';
+            });
+        });
+    
+        // Function to close the infostealer popup
+        document.getElementById('closeInfostealerPopup').addEventListener('click', function() {
+            document.getElementById('infostealerPopup').style.display = 'none';
+        });
+    
+        // Close the infostealer popup when clicking outside the popup content
+        window.addEventListener('click', function(event) {
+            var popup = document.getElementById('infostealerPopup');
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+
+
+        // Function to show the legend popup
+    document.querySelector('.help-icon').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('legendPopup').style.display = 'flex';
+    });
+
+    // Function to close the legend popup
+    document.getElementById('closeLegendPopup').addEventListener('click', function() {
+        document.getElementById('legendPopup').style.display = 'none';
+    });
+
+    // Function to close the popup
+function closePopup(popupId) {
+    document.getElementById(popupId).style.display = 'none';
+}
+
+// Event listener for closing popups with ESC key
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        // Close all popups
+        document.querySelectorAll('.popup').forEach(function(popup) {
+            popup.style.display = 'none';
+        });
+    }
+});
+
+// Close the legend popup when clicking outside the popup content
+window.addEventListener('click', function(event) {
+    var legendPopup = document.getElementById('legendPopup');
+    if (event.target === legendPopup) {
+        closePopup('legendPopup');
+    }
+});
+
+
+    document.querySelectorAll('.show-yara-popup').forEach(function(element) {
+        element.addEventListener('click', function(event) {
+            event.preventDefault();
+            var yaraUrl = this.getAttribute('data-yara-url');
+            var yaraPopup = document.getElementById('yaraPopup');
+
+            // Show the popup
+            yaraPopup.style.display = 'flex';
+
+            // Handle the YES button click
+            document.getElementById('confirmYaraYes').onclick = function() {
+                window.location.href = yaraUrl; // Redirect to the YARA URL
+            };
+
+            // Handle the NO button click or close icon
+            document.getElementById('confirmYaraNo').onclick = function() {
+                yaraPopup.style.display = 'none'; // Close the popup
+            };
+
+            document.getElementById('closeYaraPopup').onclick = function() {
+                yaraPopup.style.display = 'none'; // Close the popup
+            };
+        });
+    });
+
+    // Close the YARA popup when clicking outside the popup content
+    window.addEventListener('click', function(event) {
+        var yaraPopup = document.getElementById('yaraPopup');
+        if (event.target === yaraPopup) {
+            yaraPopup.style.display = 'none';
+        }
+    });
+
+    </script>
+        
+   <!-- Back to Top Arrow -->
+<a href="#" class="back-to-top" title="Back to top"><i class="fas fa-arrow-up"></i></a>
+
+</body>
+</html>
