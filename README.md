@@ -19,7 +19,7 @@ The application also includes features like viewing screenshots, analyzing TTPs 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./git/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
