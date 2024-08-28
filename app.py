@@ -5,7 +5,7 @@ import pycountry
 import hashlib
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
-
+import atexit
 
 app = Flask(__name__)
 
@@ -16,11 +16,8 @@ yara_directories = []
 malware_dir = "/var/www/ransomware-ng/import/Malware"
 
 def load_data():
-    global victims
-    global hudsonrock_data
-    global ttps_data
-    global yara_directories
-    global malware_dir
+    global victims, hudsonrock_data, ttps_data, yara_directories
+
     with open('./data/victims.json', 'r') as f:
         victims = json.load(f)
         victims = victims[-100:][::-1]
@@ -29,22 +26,30 @@ def load_data():
     with open('./data/ttps.json', 'r') as f:
         ttps_data = json.load(f)    
     yara_directories = [d.lower() for d in os.listdir(malware_dir) if os.path.isdir(os.path.join(malware_dir, d))]
-
-
-
-
-# Configure and start the scheduler
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=load_data, trigger="interval", minutes=1)
-scheduler.start()  # Start the scheduler
+    # Print the update time with a timestamp
+    print(f'Data updated at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
 
 # Load the data initially when the server starts
 load_data()
 
+
+# Configure and start the scheduler
+scheduler = BackgroundScheduler(daemon=True)
+scheduler.add_job(func=load_data, trigger="interval", minutes=15)
+scheduler.start()
+
+# Ensure the scheduler shuts down when the app does
+atexit.register(lambda: scheduler.shutdown())
+
 # Convert discovered and published dates to datetime objects
 for victim in victims:
+
+    dt_object = datetime.strptime(victim['discovered'], '%Y-%m-%d %H:%M:%S.%f')
     victim['discovered'] = datetime.strptime(victim['discovered'], '%Y-%m-%d %H:%M:%S.%f')
     victim['published'] = datetime.strptime(victim['published'], '%Y-%m-%d %H:%M:%S.%f')
+    
+    victim['formated_date'] = dt_object.strftime('%Y-%m-%d %H:%M')
+
     country = pycountry.countries.get(alpha_2=victim['country'])
     victim['country_name'] = country.name if country else victim['country']
 
@@ -95,14 +100,8 @@ for victim in victims:
 
 @app.route('/')
 def index():
+    #load_data()
     return render_template('index.html', victims=victims)
 
-# Shut down the scheduler when exiting the app
-@app.teardown_appcontext
-def shutdown_scheduler(exception=None):
-    if scheduler.running:  # Check if the scheduler is running
-        scheduler.shutdown()
-
-
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000, debug=False)
+    app.run(host='127.0.0.1', port=8000, debug=True)
