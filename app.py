@@ -27,7 +27,7 @@ def load_data():
         ttps_data = json.load(f)    
     yara_directories = [d.lower() for d in os.listdir(malware_dir) if os.path.isdir(os.path.join(malware_dir, d))]
     # Print the update time with a timestamp
-    print(f'Data updated at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+    #print(f'Data updated at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
 
 # Load the data initially when the server starts
 load_data()
